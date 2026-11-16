@@ -310,7 +310,7 @@ function size(){var r=svg.getBoundingClientRect();return {W:Math.max(280,r.width
 
 function drawScatter(){
  var z=size(),W=z.W,H=z.H,narrow=W<520;svg.setAttribute('viewBox','0 0 '+W+' '+H);svg.innerHTML='';
- var L=narrow?34:52,R=narrow?10:22,T=narrow?22:30,B=narrow?30:44,pw=W-L-R,ph=H-T-B;
+ var L=narrow?30:52,R=narrow?10:22,T=narrow?22:30,B=narrow?30:44,pw=W-L-R,ph=H-T-B;
  var g=el('g',{},svg);contours(g,W,H);
  /* graticule ticks along the frame */
  for(var i=0;i<=20;i++){var x=L+pw*i/20;el('line',{x1:x,x2:x,y1:T,y2:T+(i%5?3:7),stroke:cv('--faint')},g);el('line',{x1:x,x2:x,y1:T+ph,y2:T+ph-(i%5?3:7),stroke:cv('--faint')},g);}
@@ -328,11 +328,11 @@ function drawScatter(){
  if(lg)ticks.forEach(function(v){var x=X(v);if(x<L||x>L+pw)return;tx(g,x,T+ph+15,v>=1000?(v/1000)+'k':v,{'font-size':10.5,fill:cv('--faint'),'text-anchor':'middle'});});
  else{var n=5;for(var k=0;k<=n;k++){var u=lo+(hi-lo)*k/n;tx(g,L+pw*k/n,T+ph+15,u.toFixed(1),{'font-size':10.5,fill:cv('--faint'),'text-anchor':'middle'});}}
  tx(g,L+pw/2,T+ph+(narrow?28:34),XL[S.x],{'font-size':narrow?10:11.5,fill:cv('--mut'),'text-anchor':'middle'});
- var ly=el('text',{x:12,y:T+ph/2,'font-size':narrow?10:11.5,fill:cv('--mut'),'text-anchor':'middle',transform:'rotate(-90 12 '+(T+ph/2)+')'},g);ly.textContent=CL[S.cls]+' '+(S.met==='iou'?'IoU':'Dice');
+ var ly=narrow?el('text',{x:L+6,y:T+13,'font-size':10,fill:cv('--mut')},g):el('text',{x:12,y:T+ph/2,'font-size':11.5,fill:cv('--mut'),'text-anchor':'middle',transform:'rotate(-90 12 '+(T+ph/2)+')'},g);ly.textContent=CL[S.cls]+' '+(S.met==='iou'?'IoU':'Dice');
  /* marks */
  var hl=S.hl||[],pts=D.map(function(r){var v=r[S.cls][S.met];return {r:r,x:X(r[S.x][0]),y:Y(v[0]),v:v};});
- var labs=pts.slice().sort(function(a,b){return a.y-b.y;}),last=-1e9;
- var fs=narrow?9:11.5;labs.forEach(function(p){p.ly=Math.max(p.y+4,last+fs+1);last=p.ly;});
+ var labs=pts.slice().sort(function(a,b){return b.y-a.y;}),last=T+ph-4+20;
+ var fs=narrow?9:11.5;labs.forEach(function(p){p.ly=Math.min(p.y+4,last-fs-1,T+ph-4);last=p.ly;});
  var mg=el('g',{},svg);
  pts.forEach(function(p){var on=hl.indexOf(p.r.model)>=0,dim=hl.length&&!on,isSel=p.r.model===sel;
   var col=on?cv('--inland'):cv('--ink');
