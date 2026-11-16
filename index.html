@@ -103,7 +103,11 @@ footer{font-size:13.5px;color:var(--mut);border-top:1px solid var(--rule);margin
   .cart{padding:16px 16px 0}
   .col{padding:0 16px 32px}
   .instr{position:sticky;top:0;z-index:5;height:auto;padding:8px 16px 6px;background:var(--paper);border-bottom:1px solid var(--rule)}
-  .frame{flex:none;height:min(44vh,320px)}
+  .frame{flex:none;height:min(34vh,270px)}
+  .sheetHead{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .sheetHead::-webkit-scrollbar{display:none}
+  .ctl{flex:none}
+  .readout span:nth-child(n+3){display:none}
   .sheetHead{gap:4px 8px;margin-bottom:6px}
   .ctl .lab{display:none}
   .seg button{padding:3px 7px;font-size:12px;min-height:30px}
@@ -328,7 +332,7 @@ function drawScatter(){
  /* marks */
  var hl=S.hl||[],pts=D.map(function(r){var v=r[S.cls][S.met];return {r:r,x:X(r[S.x][0]),y:Y(v[0]),v:v};});
  var labs=pts.slice().sort(function(a,b){return a.y-b.y;}),last=-1e9;
- var fs=narrow?9.5:11.5;labs.forEach(function(p){p.ly=Math.max(p.y+4,last+fs+1);last=p.ly;});
+ var fs=narrow?9:11.5;labs.forEach(function(p){p.ly=Math.max(p.y+4,last+fs+1);last=p.ly;});
  var mg=el('g',{},svg);
  pts.forEach(function(p){var on=hl.indexOf(p.r.model)>=0,dim=hl.length&&!on,isSel=p.r.model===sel;
   var col=on?cv('--inland'):cv('--ink');
@@ -366,7 +370,7 @@ function drawGrid(){
 function readout(){var o=document.getElementById('readout');
  if(S.mode==='grid'){o.innerHTML='<span><b>Inset '+'ABCD'[S.stage]+'</b> illustration, no measured values</span>';return;}
  var r=D.filter(function(x){return x.model===sel;})[0],m=S.met==='iou'?'IoU':'Dice';
- o.innerHTML='<span><b>'+r.model+'</b></span><span>land '+pm(r.land[S.met])+'</span><span>sea '+pm(r.sea[S.met])+'</span><span>inland '+pm(r.inland[S.met])+' '+m+'</span><span>'+pm(r.mem)+' MB</span><span>'+pm(r.thr)+' img/s</span>';}
+ o.innerHTML='<span><b>'+r.model+'</b></span><span>'+CL[S.cls]+' '+m+' '+pm(r[S.cls][S.met])+', '+XL[S.x].split(',')[0]+' '+pm(r[S.x])+'</span><span>land '+pm(r.land[S.met])+'</span><span>sea '+pm(r.sea[S.met])+'</span><span>inland '+pm(r.inland[S.met])+' '+m+'</span><span>'+pm(r.mem)+' MB</span><span>'+pm(r.thr)+' img/s</span>';}
 
 function sync(){[['cClass','cls'],['cMet','met'],['cX','x']].forEach(function(p){document.querySelectorAll('#'+p[0]+' button').forEach(function(b){b.setAttribute('aria-pressed',S.mode!=='grid'&&b.dataset.v===S[p[1]]?'true':'false');b.disabled=S.mode==='grid';});});}
 function draw(){tip.style.opacity=0;if(S.mode==='grid')drawGrid();else drawScatter();sync();readout();}
